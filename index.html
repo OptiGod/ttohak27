@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도학초등학교 시간표 및 급식표</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/moonspam/NanumSquareNeo/nanum.css');
+
+        body {
+            font-family: 'NanumSquare Neo', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f7ff, #ffffff);
+            color: #1c1c1e;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        h1 {
+            color: #007aff;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .meals, .timetable {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            margin: 10px 0;
+            font-size: 1.1em;
+            display: none;
+        }
+        #date {
+            font-weight: 500;
+            color: #8e8e93;
+            margin-bottom: 10px;
+        }
+        #menu, #schedule {
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .arrow-button, .info-button {
+            padding: 10px;
+            border: none;
+            border-radius: 50%;
+            background-color: white;
+            color: #007aff;
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: background-color 0.3s, transform 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .arrow-button:hover, .info-button:hover {
+            background-color: #e5f6ff;
+            transform: scale(1.1);
+        }
+        .report-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #007aff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .toggle-allergy-button {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background-color: #007aff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .report-button:hover, .toggle-allergy-button:hover {
+            background-color: #005bb5;
+        }
+        .top-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+        }
+        .toggle-switch input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: relative;
+            width: 60px;
+            height: 34px;
+            background-color: #ccc;
+            border-radius: 34px;
+            cursor: pointer;
+            transition: 0.4s;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #007aff;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .label-text {
+            margin-left: 10px;
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <!-- 시간표 / 급식표 스위치 -->
+        <div class="toggle-switch">
+            <input type="checkbox" id="switch-toggle">
+            <label class="slider" for="switch-toggle"></label>
+            <span class="label-text">시간표</span>
+        </div>
+    </div>
+
+    <h1>도학초등학교 시간표 및 급식표</h1>
+    <button class="report-button" onclick="reportError()">오류 신고</button>
+    <button class="toggle-allergy-button" onclick="toggleAllergyInfo()">알레르기 정보 보기</button>
+
+    <!-- 급식표 -->
+    <div class="meals" id="meal-section">
+        <p id="date">날짜를 불러오는 중...</p>
+        <p id="menu">메뉴를 불러오는 중...</p>
+    </div>
+
+    <!-- 시간표 -->
+    <div class="timetable" id="timetable-section">
+        <p id="schedule">시간표를 불러오는 중...</p>
+    </div>
+
+    <div class="buttons">
+        <button class="arrow-button" onclick="previousDay()">&#x2190;</button>
+        <button class="arrow-button" onclick="nextDay()">&#x2192;</button>
+    </div>
+
+    <script>
+        let currentDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+        let showAllergyInfo = false;
+
+        const apiKey = '25b1e358c4c1438ab6b2c970c5b0a7dc';
+        const educationOfficeCode = 'K10';
+        const schoolCode = '7972019';
+
+        const allergyInfo = {
+            "1": "난류", "2": "우유", "3": "메밀", "4": "땅콩", "5": "대두", 
+            "6": "밀", "7": "고등어", "8": "게", "9": "새우", "10": "돼지고기", 
+            "11": "복숭아", "12": "토마토", "13": "아황산류", "14": "호두", 
+            "15": "닭고기", "16": "쇠고기", "17": "오징어", 
+            "18": "조개류(굴, 전복, 홍합 포함)", "19": "잣"
+        };
+
+        function formatDate(date) {
+            return date.toISOString().slice(0, 10).replace(/-/g, '');
+        }
+
+        function updateDateDisplay() {
+            const displayDate = currentDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('date').innerText = `날짜: ${displayDate}`;
+        }
+
+        async function fetchMeal() {
+            const formattedDate = formatDate(currentDate);
+            const url = `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${apiKey}&ATPT_OFCDC_SC_CODE=${educationOfficeCode}&SD_SCHUL_CODE=${schoolCode}&MLSV_YMD=${formattedDate}&Type=json`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                if (data.mealServiceDietInfo && data.mealServiceDietInfo[1] && data.mealServiceDietInfo[1].row) {
+                    let menuText = data.mealServiceDietInfo[1].row[0].DDISH_NM.replace(/<br\/>/g, '\n');
+                    if (showAllergyInfo) {
+                        menuText = parseAllergy(menuText);
+                    }
+                    document.getElementById('menu').innerText = menuText;
+                } else {
+                    document.getElementById('menu').innerText = "급식 정보가 없습니다.";
+                }
+            } catch (error) {
+                console.error('Error fetching meal data:', error);
+                document.getElementById('menu').innerText = "데이터를 불러오는 데 문제가 발생했습니다.";
+            }
+        }
+
+        async function fetchTimetable() {
+            const formattedDate = formatDate(currentDate);
+            const url = `https://open.neis.go.kr/hub/hisTimetable?KEY=${apiKey}&ATPT_OFCDC_SC_CODE=${educationOfficeCode}&SD_SCHUL_CODE=${schoolCode}&TI_FROM_YMD=${formattedDate}&TI_TO_YMD=${formattedDate}&Type=json&GRADE=1&CLASS_NM=1`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                if (data.hisTimetable && data.hisTimetable[1] && data.hisTimetable[1].row) {
+                    let scheduleText = data.hisTimetable[1].row.map(item => `${item.PERIO}교시: ${item.ITRT_CNTNT}`).join('\n');
+                    document.getElementById('schedule').innerText = scheduleText;
+                } else {
+                    document.getElementById('schedule').innerText = "시간표 정보가 없습니다.";
+                }
+            } catch (error) {
+                console.error('Error fetching timetable data:', error);
+                document.getElementById('schedule').innerText = "데이터를 불러오는 데 문제가 발생했습니다.";
+            }
+        }
+
+        function parseAllergy(menu) {
+            return menu.split('\n').map(item => {
+                const match = item.match(/\((\d+(\.\d+)*)\)/);
+                if (match) {
+                    const codes = match[1].split('.').map(code => allergyInfo[code.trim()] || '').filter(Boolean);
+                    return `${item.replace(match[0], '')} (${codes.join(', ')})`;
+                }
+                return item;
+            }).join('\n');
+        }
+
+        function toggleAllergyInfo() {
+            showAllergyInfo = !showAllergyInfo;
+            document.querySelector('.toggle-allergy-button').textContent = showAllergyInfo ? '알레르기 정보 숨기기' : '알레르기 정보 보기';
+            fetchMeal();
+        }
+
+        function previousDay() {
+            currentDate.setDate(currentDate.getDate() - 1);
+            updateDateDisplay();
+            fetchCurrentData();
+        }
+
+        function nextDay() {
+            currentDate.setDate(currentDate.getDate() + 1);
+            updateDateDisplay();
+            fetchCurrentData();
+        }
+
+        function reportError() {
+            window.location.href = "mailto:jihojiho329@gmail.com?subject=급식 오류 신고&body=오류 내용을 작성해주세요.";
+        }
+
+        function fetchCurrentData() {
+            const isTimetable = document.getElementById('switch-toggle').checked;
+            if (isTimetable) {
+                document.getElementById('timetable-section').style.display = 'block';
+                document.getElementById('meal-section').style.display = 'none';
+                fetchTimetable();
+            } else {
+                document.getElementById('meal-section').style.display = 'block';
+                document.getElementById('timetable-section').style.display = 'none';
+                fetchMeal();
+            }
+        }
+
+        document.getElementById('switch-toggle').addEventListener('change', fetchCurrentData);
+
+        window.onload = () => {
+            updateDateDisplay();
+            fetchCurrentData();
+        };
+    </script>
+</body>
+</html>
