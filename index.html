@@ -198,10 +198,6 @@
             <div class="switch-option" data-view="timetable">시간표</div>
         </div>
         
-        const apiKey = '25b1e358c4c1438ab6b2c970c5b0a7dc';
-        const educationOfficeCode = 'K10';
-        const schoolCode = '7972019';
-        
         <div class="date-nav">
             <button onclick="previousDay()">이전</button>
             <span class="current-date" id="current-date">2024년 3월 18일</span>
@@ -237,6 +233,9 @@
         const switchOptions = document.querySelectorAll('.switch-option');
         const mealCard = document.getElementById('meal-card');
         const timetableCard = document.getElementById('timetable-card');
+        const apiKey = '25b1e358c4c1438ab6b2c970c5b0a7dc';
+        const educationOfficeCode = 'K10';
+        const schoolCode = '7972019';
 
         switchOptions.forEach(option => {
             option.addEventListener('click', () => {
