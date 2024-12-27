@@ -3,350 +3,409 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>도학초등학교 시간표 및 급식표</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <title>도학초등학교</title>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/moonspam/NanumSquareNeo/nanum.css');
 
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --background-color: #f8fafc;
-            --card-background: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'NanumSquare Neo', Arial, sans-serif;
-            background: var(--background-color);
-            color: var(--text-primary);
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'NanumSquare Neo', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 1200px;
-            width: 95%;
-            margin: 2rem auto;
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
         }
 
-        /* 새로운 스위치 스타일 */
-        .view-switch {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #e2e8f0;
-            padding: 0.5rem;
-            border-radius: 999px;
-            margin: 2rem auto;
-            position: relative;
-            width: 300px;
-        }
-
-        .switch-option {
-            flex: 1;
+        h1 {
             text-align: center;
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            position: relative;
-            z-index: 1;
-            transition: color 0.3s ease;
-            font-weight: 500;
+            color: #2563eb;
+            margin: 20px 0;
+            font-weight: 700;
         }
 
-        .switch-slider {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: calc(50% - 4px);
-            height: calc(100% - 8px);
+        .content-box {
             background: white;
-            border-radius: 999px;
-            transition: transform 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
 
-        .view-switch[data-view="timetable"] .switch-slider {
-            transform: translateX(calc(100% + 4px));
-        }
-
-        .switch-option.active {
-            color: var(--primary-color);
-        }
-
-        /* 카드 스타일 */
-        .content-card {
-            background: var(--card-background);
-            border-radius: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin: 2rem auto;
-            max-width: 800px;
-            width: 100%;
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .content-card.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 시간표 스타일 */
-        .grade-selector {
+        .tabs {
             display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .grade-btn {
-            padding: 0.5rem 1rem;
-            border: 2px solid var(--primary-color);
-            background: transparent;
-            color: var(--primary-color);
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: #e5e7eb;
+            color: #4b5563;
             border-radius: 8px;
             cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
             transition: all 0.3s ease;
-            font-weight: 500;
         }
 
-        .grade-btn.active {
-            background: var(--primary-color);
+        .tab.active {
+            background: #2563eb;
             color: white;
         }
 
-        .timetable-grid {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .period {
-            background: #f1f5f9;
-            padding: 1rem;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-        }
-
-        .period-number {
-            font-weight: bold;
-            margin-right: 1rem;
-            color: var(--primary-color);
-        }
-
-        /* 급식 스타일 */
-        .meal-item {
-            padding: 1rem;
-            background: #f1f5f9;
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
-        }
-
-        /* 날짜 네비게이션 */
         .date-nav {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
-            margin: 1rem 0;
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
         .date-nav button {
-            background: var(--primary-color);
-            color: white;
+            padding: 8px 16px;
             border: none;
-            padding: 0.5rem 1rem;
+            background: #2563eb;
+            color: white;
             border-radius: 8px;
             cursor: pointer;
             transition: background 0.3s ease;
         }
 
         .date-nav button:hover {
-            background: var(--secondary-color);
+            background: #1d4ed8;
         }
 
-        .current-date {
-            font-weight: 500;
-            color: var(--text-primary);
+        .grade-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        h1 {
-            color: var(--primary-color);
+        .grade-btn {
+            padding: 8px 16px;
+            border: 1px solid #2563eb;
+            background: white;
+            color: #2563eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .grade-btn.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .menu-item {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .nutrition-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .nutrition-item {
             text-align: center;
-            margin-bottom: 2rem;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .nutrition-label {
+            font-size: 0.9em;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .nutrition-value {
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .period {
+            display: flex;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .period:last-child {
+            border-bottom: none;
+        }
+
+        .period-number {
+            min-width: 60px;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .error-message {
+            color: #ef4444;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            background-color: #fee2e2;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 10px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>도학초등학교 시간표 및 급식표</h1>
+        <h1>도학초등학교</h1>
 
-        <div class="view-switch" data-view="meal">
-            <div class="switch-slider"></div>
-            <div class="switch-option active" data-view="meal">급식표</div>
-            <div class="switch-option" data-view="timetable">시간표</div>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('meal')">급식표</button>
+            <button class="tab" onclick="switchTab('timetable')">시간표</button>
         </div>
-        
+
         <div class="date-nav">
-            <button onclick="previousDay()">이전</button>
-            <span class="current-date" id="current-date">2024년 3월 18일</span>
-            <button onclick="nextDay()">다음</button>
+            <button onclick="changeDate(-1)">이전</button>
+            <span id="currentDate"></span>
+            <button onclick="changeDate(1)">다음</button>
         </div>
 
-        <div id="meal-card" class="content-card active">
-            <div id="menu"></div>
+        <div id="mealView" class="content-box">
+            <div id="mealContent">데이터를 불러오는 중...</div>
+            <div id="nutritionInfo" class="nutrition-info"></div>
         </div>
 
-        <div id="timetable-card" class="content-card">
+        <div id="timetableView" class="content-box" style="display: none;">
             <div class="grade-selector">
-                <button class="grade-btn active" data-grade="1">1학년</button>
-                <button class="grade-btn" data-grade="2">2학년</button>
-                <button class="grade-btn" data-grade="3">3학년</button>
-                <button class="grade-btn" data-grade="4">4학년</button>
-                <button class="grade-btn" data-grade="5">5학년</button>
-                <button class="grade-btn" data-grade="6">6학년</button>
+                <button class="grade-btn active" onclick="changeGrade(1)">1학년</button>
+                <button class="grade-btn" onclick="changeGrade(2)">2학년</button>
+                <button class="grade-btn" onclick="changeGrade(3)">3학년</button>
+                <button class="grade-btn" onclick="changeGrade(4)">4학년</button>
+                <button class="grade-btn" onclick="changeGrade(5)">5학년</button>
+                <button class="grade-btn" onclick="changeGrade(6)">6학년</button>
             </div>
-            <div class="timetable-grid" id="timetable"></div>
+            <div id="timetableContent">데이터를 불러오는 중...</div>
         </div>
     </div>
 
     <script>
+        const API_KEY = '25b1e358c4c1438ab6b2c970c5b0a7dc';
+        const OFFICE_CODE = 'K10';
+        const SCHOOL_CODE = '7972019';
+        
         let currentDate = new Date();
         let currentGrade = 1;
-        const apiKey = '25b1e558c4c1438ab6b2c970c5b0a7dc';
-        const educationOfficeCode = 'K10';
-        const schoolCode = '7972019';
+        let currentSemester = getSemester(currentDate);
+        let currentClassNo = 1;
 
-        // 뷰 전환 처리
-        const viewSwitch = document.querySelector('.view-switch');
-        const switchOptions = document.querySelectorAll('.switch-option');
-        const mealCard = document.getElementById('meal-card');
-        const timetableCard = document.getElementById('timetable-card');
-        const apiKey = '25b1e358c4c1438ab6b2c970c5b0a7dc';
-        const educationOfficeCode = 'K10';
-        const schoolCode = '7972019';
+        function getSemester(date) {
+            const month = date.getMonth() + 1;
+            return month >= 3 && month <= 7 ? 1 : 2;
+        }
 
-        switchOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const view = option.dataset.view;
-                viewSwitch.dataset.view = view;
-                
-                switchOptions.forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
+        window.onload = () => {
+            setInitialDate();
+            updateDateDisplay();
+            loadMealData();
+        };
 
-                if (view === 'meal') {
-                    mealCard.classList.add('active');
-                    timetableCard.classList.remove('active');
-                } else {
-                    mealCard.classList.remove('active');
-                    timetableCard.classList.add('active');
-                }
-            });
-        });
+        function setInitialDate() {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            currentDate = new Date(utc + (9 * 3600000));
+        }
 
-        // 학년 선택 처리
-        document.querySelectorAll('.grade-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                document.querySelectorAll('.grade-btn').forEach(btn => 
-                    btn.classList.remove('active'));
-                button.classList.add('active');
-                currentGrade = parseInt(button.dataset.grade);
-                fetchTimetable();
-            });
-        });
-
-        function updateDate() {
+        function updateDateDisplay() {
             const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-            document.getElementById('current-date').textContent = 
+            document.getElementById('currentDate').textContent = 
                 currentDate.toLocaleDateString('ko-KR', options);
         }
 
+        function changeDate(delta) {
+            const newDate = new Date(currentDate);
+            newDate.setDate(currentDate.getDate() + delta);
+            currentDate = newDate;
+            currentSemester = getSemester(currentDate);
+            
+            updateDateDisplay();
+            
+            const activeTab = document.querySelector('.tab.active');
+            if (activeTab.textContent.includes('급식표')) {
+                loadMealData();
+            } else {
+                loadTimetableData();
+            }
+        }
+
         function formatDate(date) {
-            return date.toISOString().slice(0, 10).replace(/-/g, '');
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}${month}${day}`;
         }
 
-        async function fetchTimetable() {
-            const formattedDate = formatDate(currentDate);
-            const url = `https://open.neis.go.kr/hub/hisTimetable?KEY=${apiKey}&ATPT_OFCDC_SC_CODE=${educationOfficeCode}&SD_SCHUL_CODE=${schoolCode}&TI_FROM_YMD=${formattedDate}&TI_TO_YMD=${formattedDate}&Type=json&GRADE=${currentGrade}&CLASS_NM=1`;
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.toggle('active', t.textContent.includes(tab === 'meal' ? '급식표' : '시간표')));
 
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const timetableDiv = document.getElementById('timetable');
-                timetableDiv.innerHTML = '';
+            document.getElementById('mealView').style.display = tab === 'meal' ? 'block' : 'none';
+            document.getElementById('timetableView').style.display = tab === 'timetable' ? 'block' : 'none';
 
-                if (data.hisTimetable && data.hisTimetable[1] && data.hisTimetable[1].row) {
-                    data.hisTimetable[1].row.forEach(item => {
-                        const periodDiv = document.createElement('div');
-                        periodDiv.className = 'period';
-                        periodDiv.innerHTML = `
-                            <span class="period-number">${item.PERIO}교시</span>
-                            <span class="period-subject">${item.ITRT_CNTNT}</span>
-                        `;
-                        timetableDiv.appendChild(periodDiv);
-                    });
-                } else {
-                    timetableDiv.innerHTML = '<p>시간표 정보가 없습니다.</p>';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('timetable').innerHTML = 
-                    '<p>시간표를 불러오는 데 실패했습니다.</p>';
+            if (tab === 'meal') {
+                loadMealData();
+            } else {
+                loadTimetableData();
             }
         }
 
-        async function fetchMeal() {
-            const formattedDate = formatDate(currentDate);
-            const url = `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${apiKey}&ATPT_OFCDC_SC_CODE=${educationOfficeCode}&SD_SCHUL_CODE=${schoolCode}&MLSV_YMD=${formattedDate}&Type=json`;
+        function changeGrade(grade) {
+            currentGrade = grade;
+            document.querySelectorAll('.grade-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.startsWith(grade.toString()));
+            });
+            loadTimetableData();
+        }
+
+        async function loadMealData() {
+            const dateString = formatDate(currentDate);
+            const contentEl = document.getElementById('mealContent');
+            const nutritionEl = document.getElementById('nutritionInfo');
+            contentEl.innerHTML = '데이터를 불러오는 중...';
+            nutritionEl.innerHTML = '';
 
             try {
+                const url = `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${OFFICE_CODE}&SD_SCHUL_CODE=${SCHOOL_CODE}&MLSV_YMD=${dateString}`;
                 const response = await fetch(url);
                 const data = await response.json();
+
+                if (data.RESULT?.CODE === 'INFO-200') {
+                    contentEl.innerHTML = '급식 정보가 없습니다.';
+                    return;
+                }
+
+                if (!data.mealServiceDietInfo || !data.mealServiceDietInfo[1] || !data.mealServiceDietInfo[1].row) {
+                    throw new Error('Unexpected data structure');
+                }
+
+                const mealData = data.mealServiceDietInfo[1].row[0];
+                const meals = mealData.DDISH_NM.split('<br/>');
                 
-                if (data.mealServiceDietInfo && data.mealServiceDietInfo[1] && data.mealServiceDietInfo[1].row) {
-                    const menuItems = data.mealServiceDietInfo[1].row[0].DDISH_NM.split('<br/>');
-                    document.getElementById('menu').innerHTML = menuItems
-                        .map(item => `<div class="meal-item">${item}</div>`)
-                        .join('');
-                } else {
-                    document.getElementById('menu').innerHTML = '<p>급식 정보가 없습니다.</p>';
-                }
+                const mealHtml = meals
+                    .map(meal => `<div class="menu-item">${meal.trim()}</div>`)
+                    .join('');
+                contentEl.innerHTML = mealHtml;
+
+                const nutritionHtml = `
+                    <h3>영양 정보</h3>
+                    <div class="nutrition-grid">
+                        <div class="nutrition-item">
+                            <div class="nutrition-label">칼로리</div>
+                            <div class="nutrition-value">${mealData.CAL_INFO || '0'} kcal</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-label">탄수화물</div>
+                            <div class="nutrition-value">${mealData.CARBOH || '0'} g</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-label">단백질</div>
+                            <div class="nutrition-value">${mealData.PROTEIN || '0'} g</div>
+                        </div>
+                        <div class="nutrition-item">
+                            <div class="nutrition-label">지방</div>
+                            <div class="nutrition-value">${mealData.FAT || '0'} g</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.8em; color: #64748b; margin-top: 10px; text-align: center;">
+                        * 영양량은 개인의 체격과 성별 등에 따라 차이가 있을 수 있습니다.
+                    </div>
+                `;
+                nutritionEl.innerHTML = nutritionHtml;
+
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('menu').innerHTML = 
-                    '<p>급식 정보를 불러오는 데 실패했습니다.</p>';
+                console.error('Error loading meal data:', error);
+                contentEl.innerHTML = `
+                    <div class="error-message">
+                        급식 정보를 불러올 수 없습니다.
+                        <br>
+                        에러: ${error.message}
+                    </div>`;
+                nutritionEl.innerHTML = '';
             }
         }
 
-        function previousDay() {
-            currentDate.setDate(currentDate.getDate() - 1);
-            updateDate();
-            fetchMeal();
-            fetchTimetable();
-        }
+        async function loadTimetableData() {
+            const dateString = formatDate(currentDate);
+            const contentEl = document.getElementById('timetableContent');
+            contentEl.innerHTML = '데이터를 불러오는 중...';
 
-        function nextDay() {
-            currentDate.setDate(currentDate.getDate() + 1);
-            updateDate();
-            fetchMeal();
-            fetchTimetable();
-        }
+            try {
+                const url = `https://open.neis.go.kr/hub/elsTimetable?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${OFFICE_CODE}&SD_SCHUL_CODE=${SCHOOL_CODE}&AY=${currentDate.getFullYear()}&SEM=${currentSemester}&GRADE=${currentGrade}&CLASS_NM=${currentClassNo}&ALL_TI_YMD=${dateString}`;
+                const response = await fetch(url);
+                const data = await response.json();
 
-        // 초기 로드
-        updateDate();
-        fetchMeal();
-        fetchTimetable();
+                if (data.RESULT?.CODE === 'INFO-200') {
+                    contentEl.innerHTML = '시간표 정보가 없습니다.';
+                    return;
+                }
+
+                if (!data.elsTimetable || !data.elsTimetable[1] || !data.elsTimetable[1].row) {
+                    throw new Error('Unexpected data structure');
+                }
+
+                const periods = data.elsTimetable[1].row;
+                const timetableHtml = periods
+                    .map(period => `
+                        <div class="period">
+                            <span class="period-number">${period.PERIO}교시</span>
+                            <span class="period-subject">${period.ITRT_CNTNT}</span>
+                        </div>
+                     `)
+                    .join('');
+                contentEl.innerHTML = timetableHtml;
+
+            } catch (error) {
+                console.error('Error loading timetable data:', error);
+                contentEl.innerHTML = `
+                    <div class="error-message">
+                        시간표를 불러올 수 없습니다.
+                        <br>
+                        에러: ${error.message}
+                    </div>`;
+            }
+        }
     </script>
 </body>
 </html>
