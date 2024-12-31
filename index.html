@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 타임스퀘어 새해 카운트다운</title>
+    <title>2025 새해 카운트다운</title>
     <style>
         * {
             margin: 0;
@@ -17,244 +17,196 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: #000;
-            color: white;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .city-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(0deg, #000000 0%, #001428 40%, #002a5a 100%);
-            z-index: 1;
-        }
-
-        .buildings {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 60%;
-            background: repeating-linear-gradient(90deg, 
-                rgba(0,0,0,0.8) 0px, rgba(0,0,0,0.8) 40px,
-                rgba(20,20,40,0.8) 40px, rgba(20,20,40,0.8) 60px);
-        }
-
-        .windows {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .window {
-            position: absolute;
-            background: #4a9eff;
-            opacity: 0.5;
-            animation: flicker 4s infinite;
-        }
-
-        @keyframes flicker {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 0.2; }
-        }
-
-        .content {
-            position: relative;
-            z-index: 2;
-            backdrop-filter: blur(5px);
-            padding: 2rem;
-            border-radius: 20px;
-            background: rgba(0, 20, 40, 0.5);
-            box-shadow: 0 0 50px rgba(74, 158, 255, 0.1);
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            margin-bottom: 3rem;
+            background: #191F28;
             color: #fff;
-            text-shadow: 0 0 20px #4a9eff, 0 0 30px #4a9eff;
-            animation: neon 1.5s ease-in-out infinite alternate;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            text-align: center;
+            line-height: 1.5;
         }
 
-        @keyframes neon {
-            from {
-                text-shadow: 0 0 20px #4a9eff, 0 0 30px #4a9eff, 0 0 40px #4a9eff;
-            }
-            to {
-                text-shadow: 0 0 10px #4a9eff, 0 0 20px #4a9eff, 0 0 30px #4a9eff;
-            }
+        .info-text {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding: 0 24px;
+            margin: 0 auto;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 48px;
         }
 
         .countdown {
-            display: flex;
-            gap: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
         }
 
         .time-box {
-            position: relative;
-            width: 180px;
-            padding: 2rem;
-            background: rgba(0, 20, 40, 0.8);
-            border: 2px solid #4a9eff;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 32px 24px;
+            transition: all 0.2s ease;
+        }
+
+        .time-box:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .number {
-            font-family: 'Arial', sans-serif;
-            font-size: 5rem;
-            font-weight: bold;
-            color: #4a9eff;
-            text-shadow: 0 0 10px rgba(74, 158, 255, 0.8);
-            margin-bottom: 0.5rem;
-            animation: glow 1s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 10px #4a9eff, 0 0 20px #4a9eff;
-            }
-            to {
-                text-shadow: 0 0 20px #4a9eff, 0 0 30px #4a9eff;
-            }
+            font-size: 64px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+            margin-bottom: 8px;
+            font-variant-numeric: tabular-nums;
         }
 
         .label {
-            font-size: 1.2rem;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.6);
             text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #fff;
+            letter-spacing: 0.5px;
         }
 
-        .rain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 3;
+        .message {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 40px;
+            padding: 16px 32px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
         }
 
-        .drop {
-            position: absolute;
-            width: 1px;
-            height: 100px;
-            background: linear-gradient(to bottom, transparent, rgba(74, 158, 255, 0.3));
-            animation: rain-fall linear infinite;
-        }
-
-        @keyframes rain-fall {
-            0% { transform: translateY(-100%); opacity: 0; }
-            50% { opacity: 0.5; }
-            100% { transform: translateY(100vh); opacity: 0; }
-        }
-
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
             .countdown {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 1rem;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
 
             .time-box {
-                width: 140px;
-                padding: 1.5rem;
+                padding: 24px 16px;
             }
 
             .number {
-                font-size: 3.5rem;
+                font-size: 48px;
             }
 
-            h1 {
-                font-size: 2.5rem;
-                margin-bottom: 2rem;
+            .title {
+                font-size: 18px;
+                margin-bottom: 32px;
             }
         }
 
         @media (max-width: 480px) {
-            .time-box {
-                width: 120px;
-                padding: 1rem;
+            .container {
+                padding: 0 16px;
             }
 
             .number {
-                font-size: 3rem;
+                font-size: 40px;
             }
 
             .label {
-                font-size: 1rem;
+                font-size: 12px;
+            }
+        }
+
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, #2D3748, #191F28);
+            z-index: -1;
+        }
+
+        .blob {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: blob-movement 20s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            background: #3182CE;
+            top: -200px;
+            left: -200px;
+        }
+
+        .blob-2 {
+            background: #2B6CB0;
+            bottom: -200px;
+            right: -200px;
+            animation-delay: -10s;
+        }
+
+        @keyframes blob-movement {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(100px, 100px) scale(1.1);
+            }
+            50% {
+                transform: translate(0, 200px) scale(0.9);
+            }
+            75% {
+                transform: translate(-100px, 100px) scale(1.1);
             }
         }
     </style>
 </head>
 <body>
-    <div class="city-background">
-        <div class="buildings"></div>
-    </div>
-    <div class="rain" id="rain"></div>
-    <div class="content">
-        <h1>2025 NEW YEAR</h1>
+    <div class="gradient-bg"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    
+    <div class="info-text">새해 카운트다운이 끝나면 급식표로 돌아갑니다</div>
+    
+    <div class="container">
+        <h1 class="title">2025년까지 남은 시간</h1>
         <div class="countdown">
             <div class="time-box">
                 <div class="number" id="days">00</div>
-                <div class="label">DAYS</div>
+                <div class="label">일</div>
             </div>
             <div class="time-box">
                 <div class="number" id="hours">00</div>
-                <div class="label">HOURS</div>
+                <div class="label">시간</div>
             </div>
             <div class="time-box">
                 <div class="number" id="minutes">00</div>
-                <div class="label">MINUTES</div>
+                <div class="label">분</div>
             </div>
             <div class="time-box">
                 <div class="number" id="seconds">00</div>
-                <div class="label">SECONDS</div>
+                <div class="label">초</div>
             </div>
         </div>
     </div>
 
     <script>
-        function createWindows() {
-            const buildings = document.querySelector('.buildings');
-            const windowsContainer = document.createElement('div');
-            windowsContainer.className = 'windows';
-            
-            for (let i = 0; i < 200; i++) {
-                const window = document.createElement('div');
-                window.className = 'window';
-                window.style.width = '3px';
-                window.style.height = '5px';
-                window.style.left = `${Math.random() * 100}%`;
-                window.style.top = `${Math.random() * 100}%`;
-                window.style.animationDelay = `${Math.random() * 4}s`;
-                windowsContainer.appendChild(window);
-            }
-            
-            buildings.appendChild(windowsContainer);
-        }
-
-        function createRain() {
-            const rain = document.getElementById('rain');
-            for (let i = 0; i < 100; i++) {
-                const drop = document.createElement('div');
-                drop.className = 'drop';
-                drop.style.left = `${Math.random() * 100}%`;
-                drop.style.animationDuration = `${Math.random() * 1 + 0.5}s`;
-                drop.style.animationDelay = `${Math.random() * 2}s`;
-                rain.appendChild(drop);
-            }
-        }
-
         function updateCountdown() {
             const now = new Date();
             const newYear = new Date('2025-01-01T00:00:00');
@@ -279,13 +231,12 @@
             document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
         }
 
+        // 초기화
         document.addEventListener('DOMContentLoaded', () => {
-            createWindows();
-            createRain();
             setInterval(updateCountdown, 1000);
             updateCountdown();
 
-            // 화면 켜짐 유지를 위한 주기적인 작은 동작
+            // 화면 켜짐 유지
             setInterval(() => {
                 const temp = document.createElement('div');
                 document.body.appendChild(temp);
